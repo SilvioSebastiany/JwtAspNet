@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using JwtAspNet.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAspNet.Services;
@@ -21,6 +23,7 @@ public class TokenService
             SecurityAlgorithms.HmacSha256
         );
 
+        // Cria os dados do token
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             SigningCredentials = credentials,           // Chave privada para assinar o token
@@ -31,5 +34,25 @@ public class TokenService
         var token = tokenHandler.CreateToken(tokenDescriptor); 
         var tokenString = tokenHandler.WriteToken(token);
         return tokenString;
+    }
+
+    private static ClaimsIdentity GenerateClaims(User user)
+    {
+        var ci = new ClaimsIdentity();
+
+        // Adiciona as claims (informações) do usuário ao token
+        // Essas claims podem ser usadas para identificar o usuário e suas permissões
+        ci.AddClaim(new Claim("Id", user.Id.ToString()));
+        ci.AddClaim(new Claim(ClaimTypes.Name, user.Email));
+        ci.AddClaim(new Claim(ClaimTypes.Email, user.Email)); 
+        ci.AddClaim(new Claim(ClaimTypes.GivenName, user.Name)); 
+        ci.AddClaim(new Claim("Image", user.Image));
+
+        foreach (var role in user.Roles)
+        {
+            ci.AddClaim(new Claim(ClaimTypes.Role, role)); // Adiciona cada papel (role) do usuário como uma claim
+        }
+
+        return ci;
     }
 }
