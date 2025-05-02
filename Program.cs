@@ -1,5 +1,9 @@
+using System.Text;
+using JwtAspNet;
 using JwtAspNet.Models;
 using JwtAspNet.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Isso permite que o TokenService seja injetado em controladores ou outros serviços
 builder.Services.AddTransient<TokenService>(); 
 // Adiciona a configuração de autenticação JWT ao contêiner de injeção de dependência
-builder.Services.AddAuthentication();  
+builder.Services.AddAuthentication(x => 
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // Define o esquema de autenticação padrão como JWT Bearer
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // Define o esquema de desafio padrão como JWT Bearer
+}).AddJwtBearer(x => 
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.PrivateKey)), // Chave privada para validação
+        ValidateIssuer = false, // Não valida o emissor do token (pode ser ajustado conforme necessário)
+        ValidateAudience = false, // Não valida o público do token (pode ser ajustado conforme necessário)
+    };
+});  
 builder.Services.AddAuthorization();  
 
 
