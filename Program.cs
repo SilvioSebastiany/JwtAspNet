@@ -5,9 +5,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona o serviço de TokenService ao contêiner de injeção de dependência
 // Isso permite que o TokenService seja injetado em controladores ou outros serviços
-builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<TokenService>(); 
+// Adiciona a configuração de autenticação JWT ao contêiner de injeção de dependência
+builder.Services.AddAuthentication();  
+builder.Services.AddAuthorization();  
+
 
 var app = builder.Build();
+
+// Habilita a autenticação no pipeline de requisições HTTP
+// Isso permite que o ASP.NET Core valide os tokens JWT em requisições recebidas
+app.UseAuthentication(); 
+app.UseAuthorization();   
 
 // Configura o pipeline de requisições HTTP
 // Define um endpoint GET na raiz ("/") que cria e retorna um token JWT
