@@ -1,3 +1,4 @@
+using JwtAspNet.Models;
 using JwtAspNet.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +13,18 @@ var app = builder.Build();
 // Define um endpoint GET na raiz ("/") que cria e retorna um token JWT
 app.MapGet("/", (TokenService tokenService) =>
 {
-    var token = tokenService.Create();
-    return Results.Ok(token);
+    var user = new User( 
+        1, 
+        "Silvio", 
+        "silvio.sebastiany@gmail.com", 
+        "https://avatars.githubusercontent.com/u/1021230?v=4",
+        "123456", 
+        new string[] { "Admin", "User" }
+    ); 
+
+    // Chama o método Create do TokenService para gerar um token JWT para o usuário
+    return tokenService.Create(user);
+
 });
 
 app.Run();

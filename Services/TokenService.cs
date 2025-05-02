@@ -8,7 +8,7 @@ namespace JwtAspNet.Services;
 
 public class TokenService
 {
-    public string Create()
+    public string Create( User user)
     {
         // Cria um token JWT
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -28,6 +28,8 @@ public class TokenService
         {
             SigningCredentials = credentials,           // Chave privada para assinar o token
             Expires = DateTime.UtcNow.AddHours(2),      // Tempo de expiração do token
+            Subject = GenerateClaims(user),             // Gera as claims (informações) do usuário
+
         };
 
 
@@ -42,11 +44,11 @@ public class TokenService
 
         // Adiciona as claims (informações) do usuário ao token
         // Essas claims podem ser usadas para identificar o usuário e suas permissões
-        ci.AddClaim(new Claim("Id", user.Id.ToString()));
+        ci.AddClaim(new Claim("id", user.Id.ToString()));
         ci.AddClaim(new Claim(ClaimTypes.Name, user.Email));
         ci.AddClaim(new Claim(ClaimTypes.Email, user.Email)); 
         ci.AddClaim(new Claim(ClaimTypes.GivenName, user.Name)); 
-        ci.AddClaim(new Claim("Image", user.Image));
+        ci.AddClaim(new Claim("image", user.Image));
 
         foreach (var role in user.Roles)
         {
