@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using JwtAspNet;
+using JwtAspNet.Extensions;
 using JwtAspNet.Models;
 using JwtAspNet.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,7 +48,7 @@ app.MapGet("/login", (TokenService tokenService) =>
     var user = new User( 
         1, 
         "Silvio", 
-        "silvio.sebastiany@gmail.com", 
+        "", 
         "https://avatars.githubusercontent.com/u/1021230?v=4",
         "123456", 
         new string[] { "User" }
@@ -60,11 +61,11 @@ app.MapGet("/login", (TokenService tokenService) =>
 
 app.MapGet("/restrito",(ClaimsPrincipal user) => new
 {
-    id = user.Claims.FirstOrDefault(x => x.Type == "id")?.Value,
-    name = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value,
-    email = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value,
-    giveName = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value,
-    image = user.Claims.FirstOrDefault(x => x.Type == "image")?.Value, 
+    id = user.GetId(),
+    name = user.GetName(),
+    email = user.GetEmail(),
+    giveName = user.GetGivenName(),
+    image = user.GetImage(),
 }).RequireAuthorization();
 
 app.MapGet("/admin",() => "You tem acesso")
